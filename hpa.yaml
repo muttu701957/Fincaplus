@@ -1,12 +1,12 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: spring-boot-k8s-hpa
+  name: k8s-hpa
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: spring-boot-k8s-deployment
+    name: k8s-deployment
   minReplicas: 2
   maxReplicas: 5
   metrics:
