@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: spring-boot-k8s
-          image: mruthyunjaymarigoudr/fincapluss-image
+          image: mruthyunjaymarigoudr/fincapluss-image:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8091
