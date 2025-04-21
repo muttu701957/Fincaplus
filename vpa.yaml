@@ -1,14 +1,14 @@
 apiVersion: autoscaling.k8s.io/v1
 kind: VerticalPodAutoscaler
 metadata:
-  name: spring-boot-k8s-vpa
+  name: k8s-vpa
 spec:
   targetRef:
     apiVersion: "apps/v1"
-    kind:       Deployment
-    name:       spring-boot-k8s-deployment
+    kind: Deployment
+    name: k8s-deployment
   updatePolicy:
-    updateMode: "Auto"  # Options: Off, Initial, Auto
+    updateMode: "Auto"
   resourcePolicy:
     containerPolicies:
     - containerName: spring-boot-k8s
