@@ -13,4 +13,4 @@ service jenkins restart
  service jenkins restart
 
 
- Go to jenkins -> create pipeline and select https://github.com/akshu20791/Banking-java-project/ as source code project
+
