@@ -1,11 +1,21 @@
 pipeline {
     agent any
-
+    environment {
+        SONAR_HOME = tool "sonar"
+    }
     stages {
         stage('Checkout Code from GitHub') {
             steps {
                 git url: 'https://github.com/muttu701957/Fincaplus/', branch: 'main'
                 echo 'Code checked out from GitHub.'
+            }
+        }
+
+        stage("SonarQube Quality Analysis") {
+            steps {
+                withSonarQubeEnv("Sonar") {
+                    sh "${SONAR_HOME}/bin/sonar-scanner -Dsonar.projectName=Fincaplus -Dsonar.projectKey=Fincaplus"
+                }
             }
         }
 
@@ -36,10 +46,10 @@ pipeline {
         }
 
         stage('Deploy to Kubernetes') {
-            steps { 
+            steps {
                 withKubeConfig(
-                    credentialsId: 'Kubernetes', 
-                    serverUrl: 'https://your-k8s-api-server', 
+                    credentialsId: 'Kubernetes',
+                    serverUrl: 'https://your-k8s-api-server',
                     namespace: 'default',
                     restrictKubeConfigAccess: false
                 ) {
