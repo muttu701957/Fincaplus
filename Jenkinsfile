@@ -1,42 +1,50 @@
-pipeline{
+pipeline {
     agent any
-    stages{
-        stage('checkout the code from github'){
-            steps{
-                 git url: 'https://github.com/akshu20791/Banking-java-project/'
-                 echo 'github url checkout'
+
+    stages {
+        stage('Checkout Code from GitHub') {
+            steps {
+                git url: 'https://github.com/muttu701957/Fincaplus/', branch: 'main'
+                echo 'Code checked out from GitHub.'
             }
         }
-        stage('codecompile with akshat'){
-            steps{
-                echo 'starting compiling'
-                sh 'mvn compile'
+
+        stage('Build with Maven') {
+            steps {
+                sh 'mvn clean compile test package'
             }
         }
-        stage('codetesting with akshat'){
-            steps{
-                sh 'mvn test'
+
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t fincaplus-image:latest .'
             }
         }
-        stage('qa with akshat'){
-            steps{
-                sh 'mvn checkstyle:checkstyle'
+
+        stage('Push To DockerHub') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: "Dockerhub",
+                    usernameVariable: "DockerhubUser",
+                    passwordVariable: "DockerhubPass"
+                )]) {
+                    sh 'echo $DockerhubPass | docker login -u $DockerhubUser --password-stdin'
+                    sh "docker image tag fincaplus-image:latest ${DockerhubUser}/fincaplus-image:latest"
+                    sh "docker push ${DockerhubUser}/fincaplus-image:latest"
+                }
             }
         }
-        stage('package with akshat'){
-            steps{
-                sh 'mvn package'
+
+        stage('Deploy to Kubernetes') {
+            steps {
+               withKubeConfig(caCertificate: '', clusterName: '', contextName: '', credentialsId: 'Kubernetes', namespace: '', restrictKubeConfigAccess: false, serverUrl: '') {
+
+                    sh 'kubectl apply -f deployment.yaml'
+                    sh 'kubectl apply -f service.yaml'
+                    sh 'kubectl apply -f hpa.yaml'
+                    sh 'kubectl apply -f vpa.yaml'
+                }
             }
         }
-        stage('run dockerfile'){
-          steps{
-               sh 'docker build -t myimg .'
-           }
-         }
-        stage('port expose'){
-            steps{
-                sh 'docker run -dt -p 8091:8091 --name c000 myimg'
-            }
-        }   
     }
 }
