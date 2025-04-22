@@ -37,6 +37,10 @@ automated and addedd github webhook to automatically build in jenkin pipeline if
 
 successfully executed the whole pipeline and performed end to end automation
 
+Deployed the application in the Docker container
+
+Deployed and Exposed the service through NodePort in kubernetes
+
 
 
 ![1](https://github.com/user-attachments/assets/f779c11b-b3e2-45a4-bdc9-50998e2e03f7)
@@ -51,7 +55,11 @@ successfully executed the whole pipeline and performed end to end automation
 ![9](https://github.com/user-attachments/assets/0ad8ccfc-4033-421e-af30-f932e8f52766)
 ![10](https://github.com/user-attachments/assets/ea876ff5-6520-4c1a-a0af-73431361c855)
 ![11](https://github.com/user-attachments/assets/37b1cd10-7aef-4ca3-93c1-232dab8762ab)
+
+Deployed the application in the Docker container
 ![12](https://github.com/user-attachments/assets/56a38525-1ac1-4e64-b842-725701e8886e)
+
+Deployed and Exposed the service through NodePort in kubernetes
 ![13](https://github.com/user-attachments/assets/1e5ccfed-470c-4d95-a885-0d45ae92e462)
 
 
