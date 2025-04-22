@@ -1,36 +1,51 @@
 pipeline {
     agent any
-    environment {
-        SONAR_HOME = tool "sonar"
-    }
     stages {
         stage('Checkout Code from GitHub') {
             steps {
                 git url: 'https://github.com/muttu701957/Fincaplus/', branch: 'main'
-                echo 'Code checked out from GitHub.'
+                echo 'Git checked out from GitHub.'
             }
         }
-
-        stage("SonarQube Quality Analysis") {
+        stage('Maven Clean') {
             steps {
-                withSonarQubeEnv("Sonar") {
-                    sh "${SONAR_HOME}/bin/sonar-scanner -Dsonar.projectName=Fincaplus -Dsonar.projectKey=Fincaplus"
-                }
+                sh 'mvn clean'
+                echo 'Maven clean completed.'
             }
         }
-
-        stage('Build with Maven') {
-            steps {
-                sh 'mvn clean compile test package'
+        stage('codecompile '){
+            steps{
+                echo 'starting compiling'
+                sh 'mvn compile'
             }
         }
-
+        stage('codetesting '){
+            steps{
+                sh 'mvn test'
+            }
+        }
+        stage('quality Assurance'){
+            steps{
+                sh 'mvn checkstyle:checkstyle'
+            }
+        }
+        stage('package process'){
+            steps{
+                sh 'mvn package'
+            }
+        }
         stage('Build Docker Image') {
             steps {
                 sh 'docker build -t fincaplus-image:latest .'
+                echo 'Docker image built successfully.'
             }
         }
-
+        stage("Trivy File System Scan") {
+            steps {
+                sh 'trivy fs --format table -o trivy-fs-report.html .'
+                echo 'Trivy scan completed.'
+            }
+        }
         stage('Push To DockerHub') {
             steps {
                 withCredentials([usernamePassword(
@@ -44,19 +59,20 @@ pipeline {
                 }
             }
         }
-
+        stage('Docker Run') {
+            steps {
+                sh 'docker run -d --name Container1 -p 8091:8091 fincaplus-image:latest'
+                echo 'Docker container started.'
+            }
+        }
         stage('Deploy to Kubernetes') {
             steps {
-                withKubeConfig(
-                    credentialsId: 'Kubernetes',
-                    serverUrl: 'https://your-k8s-api-server',
-                    namespace: 'default',
-                    restrictKubeConfigAccess: false
-                ) {
-                    sh 'kubectl apply -f deployment.yaml'
-                    sh 'kubectl apply -f service.yaml'
-                    sh 'kubectl apply -f hpa.yaml'
-                    sh 'kubectl apply -f vpa.yaml'
+                withKubeConfig(caCertificate: '', clusterName: '', contextName: '', credentialsId: 'Kubernetes', namespace: '', restrictKubeConfigAccess: false, serverUrl: '') {
+                    sh "kubectl apply -f pod.yaml"
+                    sh "kubectl apply -f deployment.yaml"
+                    sh "kubectl apply -f service.yaml"
+                    sh "kubectl apply -f hpa.yaml"
+                    echo 'Kubernetes deployment completed.'
                 }
             }
         }
