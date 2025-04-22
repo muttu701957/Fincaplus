@@ -1,3 +1,5 @@
+I had created 3 ec2 machine, vpc components through Terraform,
+
 Create a ubuntu machine
 
 sudo su
